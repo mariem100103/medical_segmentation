@@ -8,6 +8,14 @@
 
 ---
 
+## Overview
+
+Deep learning models for medical image segmentation are often over-parameterised, leading to high GPU memory consumption, increased latency, and difficult deployment in clinical hardware environments.
+
+This repository evaluates **architectural complexity reduction** by comparing a baseline **Standard U-Net** (~31.4M parameters) against a lightweight **Half U-Net** (~7.8M parameters) on breast ultrasound images (**BUSI**). The goal is to measure the trade-off between segmentation accuracy (Dice Similarity Coefficient) and computational efficiency (parameter count, peak VRAM, and inference speed).
+
+---
+
 ## Research Question
 
 > *Can halving the convolutional channel depth of a U-Net encoder–decoder preserve
@@ -20,7 +28,7 @@
 
 | Architecture | Encoder Channels | Parameters | Design Principle |
 |---|---|---|---|
-| **U-Net** (baseline) | `[64, 128, 256, 512, 1024]` | ~31M | Ronneberger et al., 2015 |
+| **U-Net** (baseline) | `[64, 128, 256, 512, 1024]` | ~31.4M | Ronneberger et al., 2015 |
 | **Half U-Net** (ours) | `[32, 64, 128, 256, 512]` | ~7.8M | Channel reduction (André et al., 2025) |
 
 Both models share identical:
@@ -53,14 +61,14 @@ and is robust to foreground/background imbalance.
 
 | Model | Best Val DSC ↑ | Parameters ↓ | Peak VRAM (MB) ↓ | Latency (ms) ↓ |
 |---|---|---|---|---|
-| U-Net (baseline) | **0.8923** | 31,042,049 | 1,284 MB | 18.4 ms |
-| Half U-Net | 0.8871 | **7,760,897** | **1,001 MB** | **11.2 ms** |
-| **Δ (Half vs Full)** | −0.52 pp | **−75.0%** | **−22.0%** | **−39.1%** |
+| U-Net (baseline) | **0.7487** | 31,383,681 | 616.8 MB | 25.32 ms |
+| Half U-Net | 0.7266 | **7,849,025** | **181.7 MB** | **7.78 ms** |
+| **Δ (Half vs Full)** | −2.21 pp | **−75.0%** | **−70.5%** | **−69.3%** |
 
-**Key finding:** Halving channel capacity reduces parameter count by ~75% and peak GPU
-VRAM by ~22%, with only a 0.52 percentage-point drop in Dice Similarity Coefficient —
-confirming that over-parameterised models are not strictly necessary for precise anatomical
-segmentation, consistent with André et al. (MAGMA, 2025).
+**Key finding:** Halving channel capacity reduces parameter count by **75.0%**, peak GPU
+VRAM by **70.5%**, and inference latency by **69.3%** (~3.25× faster), with only a 2.21 percentage-point
+difference in Dice Similarity Coefficient — confirming that over-parameterised models are
+not strictly necessary for precise anatomical segmentation, consistent with André et al. (MAGMA, 2025).
 
 ---
 
